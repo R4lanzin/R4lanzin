@@ -1,8 +1,8 @@
 # Fake Hacked Site 🎭
 
-Uma página de brincadeira que simula uma "invasão hacker", com efeito de chuva de código estilo Matrix, texto glitch e um terminal falso digitando mensagens de "invasão".
+Uma página de brincadeira minimalista: fundo branco, o símbolo do Red John (The Mentalist) desenhado em vermelho e a assinatura "by Subsequency and Red Team".
 
-⚠️ **100% inofensiva** — é só HTML, CSS e JavaScript puro rodando no navegador. Não acessa webcam, não coleta dados, não se conecta a nada e não modifica nenhum sistema real.
+⚠️ **100% inofensiva** — é só HTML e CSS puro rodando no navegador. Não acessa webcam, não coleta dados, não se conecta a nada e não modifica nenhum sistema real.
 
 ## Como usar
 
