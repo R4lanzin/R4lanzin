@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SYSTEM COMPROMISED</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: 'Courier New', Consolas, monospace;
+  }
+
+  #matrix {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .overlay {
+    position: relative;
+    z-index: 1;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 24px;
+    color: #ff2b2b;
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .skull {
+    font-size: clamp(48px, 10vw, 96px);
+    line-height: 1;
+    margin-bottom: 12px;
+    animation: pulse 1.4s ease-in-out infinite;
+    filter: drop-shadow(0 0 12px #ff2b2b);
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.75; }
+  }
+
+  h1 {
+    font-size: clamp(28px, 6vw, 64px);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    text-shadow: 0 0 8px #ff2b2b, 0 0 22px #ff2b2b;
+    animation: glitch 2.2s infinite;
+    position: relative;
+  }
+
+  @keyframes glitch {
+    0%, 92%, 100% { transform: translate(0, 0); text-shadow: 0 0 8px #ff2b2b, 0 0 22px #ff2b2b; }
+    93% { transform: translate(-3px, 1px); text-shadow: 2px 0 #00e5ff, -2px 0 #ff2b2b; }
+    95% { transform: translate(3px, -1px); text-shadow: -2px 0 #00e5ff, 2px 0 #ff2b2b; }
+    97% { transform: translate(-2px, 0); text-shadow: 2px 0 #ff2b2b; }
+  }
+
+  .subtitle {
+    margin-top: 14px;
+    color: #ff9d9d;
+    font-size: clamp(13px, 2.4vw, 18px);
+    letter-spacing: 2px;
+  }
+
+  .terminal {
+    margin-top: 32px;
+    width: min(680px, 92vw);
+    background: rgba(0, 15, 0, 0.85);
+    border: 1px solid #00ff41;
+    border-radius: 6px;
+    box-shadow: 0 0 24px rgba(0, 255, 65, 0.35);
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .terminal-bar {
+    background: #0a0a0a;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #00ff41;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot.red { background: #ff5f56; }
+  .dot.yellow { background: #ffbd2e; }
+  .dot.green { background: #27c93f; }
+
+  .terminal-title {
+    margin-left: 10px;
+    color: #00ff41;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+
+  #term-body {
+    padding: 16px;
+    color: #00ff41;
+    font-size: clamp(11px, 1.8vw, 14px);
+    min-height: 210px;
+    white-space: pre-wrap;
+    line-height: 1.5;
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 8px;
+    background: #00ff41;
+    animation: blink 0.8s steps(1) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .footer-note {
+    margin-top: 22px;
+    font-size: 12px;
+    color: #777;
+    letter-spacing: 1px;
+  }
+
+  .footer-note strong { color: #ff9d9d; }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="overlay">
+  <div class="skull">☠</div>
+  <h1 data-text="SYSTEM COMPROMISED">SYSTEM COMPROMISED</h1>
+  <div class="subtitle">// Este site foi &quot;invadido&quot; por R4lan — é uma brincadeira, relaxa hehe //</div>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <span class="dot red"></span>
+      <span class="dot yellow"></span>
+      <span class="dot green"></span>
+      <span class="terminal-title">root@r4lan:~#</span>
+    </div>
+    <div id="term-body"></div>
+  </div>
+
+  <div class="footer-note">
+    <strong>Isso é só um prank visual</strong> — nenhum dado foi acessado, coletado ou modificado. 100% inofensivo.
+  </div>
+</div>
+
+<script>
+  // ---- Matrix rain background ----
+  const canvas = document.getElementById('matrix');
+  const ctx = canvas.getContext('2d');
+  let width, height, columns, drops;
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    columns = Math.floor(width / 16);
+    drops = new Array(columns).fill(1);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const chars = 'アイウエオカキクケコサシスセソ01234567890ABCDEFXYZ$#@!';
+
+  function drawMatrix() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+    ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = '#00ff41';
+    ctx.font = '14px monospace';
+
+    for (let i = 0; i < drops.length; i++) {
+      const text = chars[Math.floor(Math.random() * chars.length)];
+      ctx.fillText(text, i * 16, drops[i] * 16);
+
+      if (drops[i] * 16 > height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  setInterval(drawMatrix, 40);
+
+  // ---- Fake terminal typing effect ----
+  const lines = [
+    '[OK] Conectando ao mainframe...',
+    '[OK] Ignorando firewall (na verdade não, isso não é real)',
+    '[OK] Baixando memes confidenciais...',
+    '[OK] Acessando webcam... câmera não encontrada (óbvio)',
+    '[OK] Trocando senha do wifi por "eu_fui_pegoso"',
+    '[!!] Nenhum sistema real foi afetado.',
+    '[!!] Essa página é apenas uma brincadeira feita em HTML/CSS/JS.',
+    '',
+    '> Se você chegou até aqui e ficou com o coração acelerado,',
+    '> a missão foi cumprida com sucesso. 😄',
+    '',
+    'Digite F5 para reiniciar a "invasão".'
+  ];
+
+  const termBody = document.getElementById('term-body');
+  let lineIndex = 0;
+  let charIndex = 0;
+
+  function typeLine() {
+    if (lineIndex >= lines.length) {
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      cursor.textContent = ' ';
+      termBody.appendChild(cursor);
+      return;
+    }
+
+    const currentLine = lines[lineIndex];
+
+    if (charIndex === 0) {
+      termBody.appendChild(document.createElement('br'));
+    }
+
+    if (charIndex < currentLine.length) {
+      termBody.lastChild
+        ? termBody.appendChild(document.createTextNode(currentLine[charIndex]))
+        : termBody.appendChild(document.createTextNode(currentLine[charIndex]));
+      charIndex++;
+      setTimeout(typeLine, 18 + Math.random() * 22);
+    } else {
+      lineIndex++;
+      charIndex = 0;
+      setTimeout(typeLine, 250);
+    }
+  }
+
+  // small delay before the "hack" starts typing
+  setTimeout(typeLine, 600);
+</script>
+
+</body>
+</html>
